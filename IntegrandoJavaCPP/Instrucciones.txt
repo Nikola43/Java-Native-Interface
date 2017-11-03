@@ -1,0 +1,47 @@
+
+1 //Instalar mingw 64 bits
+https://sourceforge.net/projects/mingw-w64/
+
+2 //Copiar la ruta de mingw en la variable de entorno path 
+C:\Program Files\mingw-w64\x86_64-6.2.0-posix-seh-rt_v5-rev1\mingw64\bin
+
+3. //Creamos fichero java
+public class HelloWorld 
+{
+    native int helloFromC(); /* (1) */
+    static 
+    {
+        System.loadLibrary("ctest"); /* (2) */
+    }
+    static public void main(String argv[]) 
+    {
+        HelloWorld helloWorld = new HelloWorld();
+        helloWorld.helloFromC(); /* (3) */
+    }
+}
+
+
+4. //Compilamos el fichero java
+javac HelloWorld.java
+
+5. //Generamos el fichero.h 
+javah HelloWorld
+
+6. //Creamos el fichero de cpp
+#include <jni.h>
+#include "HelloWorld.h"
+#include <iostream>
+
+JNIEXPORT jint JNICALL Java_HelloWorld_helloFromC(JNIEnv * env, jobject jobj)
+{
+    std::cout << "Hello World!";
+    return(56);
+}
+
+
+7. //Compilamos la libreria para 64 bits | usar -m32 para 32 bits
+
+g++ ctest.cpp -o ctest.dll -LD -Fe -m64 -shared -I "C:\Program Files\Java\jdk1.8.0_111\include" -I "C:\Program Files\Java\jdk1.8.0_111\include\win32"
+
+8. //Ejecutar java
+java HelloWorld
